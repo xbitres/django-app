@@ -3,6 +3,8 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from .models import Question, Choice
+from rest_framework import generics
+from .serializers import QuestionSerializer
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -35,3 +37,10 @@ def vote(request, question_id):
         selected_choice.save()
 
         return HttpResponseRedirect(reverse('polls:results', args=(question_id,)))
+
+class CreateAPIView(generics.ListCreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()

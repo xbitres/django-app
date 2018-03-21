@@ -5,6 +5,7 @@ from django.views import generic
 from .models import Question, Choice
 from rest_framework import generics
 from .serializers import QuestionSerializer
+from django.utils import timezone
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -38,9 +39,13 @@ def vote(request, question_id):
 
         return HttpResponseRedirect(reverse('polls:results', args=(question_id,)))
 
-class CreateAPIView(generics.ListCreateAPIView):
+class QuestionsAPIView(generics.ListAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
     def perform_create(self, serializer):
         serializer.save()
+
+class QuestionAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer

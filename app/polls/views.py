@@ -5,7 +5,9 @@ from django.views import generic
 from .models import Question, Choice
 from rest_framework import generics
 from .serializers import QuestionSerializer
+from .permissions import IsOwner
 from django.utils import timezone
+from rest_framework import permissions
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -42,10 +44,12 @@ def vote(request, question_id):
 class QuestionsAPIView(generics.ListAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def perform_create(self, serializer):
-        serializer.save()
+        serializer.save(owner=self.request.user)
 
 class QuestionAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
